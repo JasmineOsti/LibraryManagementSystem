@@ -1,0 +1,17 @@
+	Welcome to BigHit Mart
+
+ Bill Number : 1406
+Customer Name : sf
+Phone Number : afs
+======================================
+Products		OTY	Price
+======================================
+ Bath Soap		1		40
+ Rice		1		450
+ Bath Soap		1		40
+-------------------------------------
+Cosmetic Tax			Rs. 2.0
+Grocery Tax			Rs. 45.0
+Cold Drinks Tax			Rs. 12.5
+Total Bill			 Rs. 799.5
+-------------------------------------

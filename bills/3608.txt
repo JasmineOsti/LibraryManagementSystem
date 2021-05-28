@@ -1,0 +1,17 @@
+	Welcome to BigHit Mart
+
+ Bill Number : 3608
+Customer Name : jas
+Phone Number : 123
+======================================
+Products		OTY	Price
+======================================
+ Bath Soap		1		40
+ Coffee		1		300
+ Pepsi		5		1250
+-------------------------------------
+Cosmetic Tax			Rs. 2.0
+Grocery Tax			Rs. 30.0
+Cold Drinks Tax			Rs. 62.5
+Total Bill			 Rs. 1684.5
+-------------------------------------
