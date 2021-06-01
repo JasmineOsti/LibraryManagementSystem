@@ -1,2 +1,2 @@
 # StoreManagementSystem
-Hello
+Hello, this is store management system.
