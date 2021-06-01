@@ -1,382 +1,524 @@
-from tkinter import*
-import math,random,os
+from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
-class Bill_App:
-    def __init__(self,root):
-        self.root=root
-        self.root.geometry("1350x700+0+0")
-        self.root.title("Billing System")
-        bg_color="#856ff8"
-        title=Label(self.root,text="Billing System",bd=12,relief=GROOVE,bg=bg_color,fg="white",font=("times new roman",30,"bold"),pady=2).pack(fill=X)
-        #=======variable============
-        #=======cosmetics===========
-        self.Bath_Soap=IntVar()
-        self.Face_Cream=IntVar()
-        self.Nailpolish=IntVar()
-        self.Lipstick=IntVar()
-        self.Eyeliner=IntVar()
-        self.Body_Lotion=IntVar()
-        #=======grocery===========
-        self.Rice=IntVar()
-        self.Coffee=IntVar()
-        self.Sugar=IntVar()
-        self.Cheese=IntVar()
-        self.Bread=IntVar()
-        self.Eggs=IntVar()
-        #=======cosmetics===========
-        self.Coke= IntVar()
-        self.Sprite= IntVar()
-        self.Dew= IntVar()
-        self.Pepsi= IntVar()
-        self.Red_Bull= IntVar()
-        self.Fruit_Juice= IntVar()
-        #========Total Products Price and Tax Variables=======
-        self.Cosmetic_Price=StringVar()
-        self.Grocery_Price=StringVar()
-        self.Cold_Drinks_Price=StringVar()
+from PIL import Image,ImageTk
+import random
+import sqlite3
+image1='library.png'
+image2='image2.png'
+image3='finance.png'
+#pip install Pillow
+class menu:
 
-        self.Cosmetic_Tax=StringVar()
-        self.Grocery_Tax=StringVar()
-        self.Cold_Drinks_Tax=StringVar()
+    def __init__(self):
+        self.root=Tk()
+        self.root.title('Menu')
+       # self.root.state('zoomed')
+        conn=sqlite3.connect('test.db')
+        conn.execute('''create table if not exists book_info
+        (ID VARCHAR PRIMARY KEY NOT NULL,
+        TITLE VARTEXT NOT NULL,
+        AUTHOR VARTEXT NOT NULL,
+        GENRE VARTEXT NOT NULL,
+        COPIES VARINT NOT NULL,
+        LOCATION VARCHAR NOT NULL);''')
+        conn.commit()
+        conn.execute('''create table if not exists book_issued
+        (BOOK_ID VARCHAR NOT NULL,
+        STUDENT_ID VARCHAR NOT NULL,
+        ISSUE_DATE DATE NOT NULL,
+        RETURN_DATE DATE NOT NULL,
+        PRIMARY KEY (BOOK_ID,STUDENT_ID));''')
+        conn.commit()
+        conn.close()
+        self.a=self.canvases(image1)
+        l1=Button(self.a,text='BOOK DATA',font='Papyrus 22 bold',fg='Yellow',bg='Black',width=19,padx=10,borderwidth=0,command=self.book).place(x=100,y=500)
+        l2=Button(self.a,text='STUDENT DATA',font='Papyrus 22 bold',fg='Yellow',bg='Black',width=19,padx=10,borderwidth=0,command=self.student).place(x=800,y=500)
+        self.root.mainloop()
+    def canvases(self,images):
+        w = self.root.winfo_screenwidth()
+        h = self.root.winfo_screenheight()
+        #photo=PhotoImage(file=images)
+        photo=Image.open(images)
+        photo1=photo.resize((w,h),Image.ANTIALIAS)
+        photo2=ImageTk.PhotoImage(photo1)
 
-        #==========Customer=============
-        self.c_name=StringVar()
-        self.c_phone=StringVar()
+        #photo2 = ImageTk.PhotoImage(Image.open(images).resize((w, h)),Image.ANTIALIAS)
+        self.canvas = Canvas(self.root, width='%d'%w, height='%d'%h)
+        self.canvas.grid(row = 0, column = 0)
+        self.canvas.grid_propagate(0)
+        self.canvas.create_image(0, 0, anchor = NW, image=photo2)
+        self.canvas.image=photo2
+        return self.canvas
+    def book(self):
+        self.a.destroy()
+        self.a=self.canvases(image2)
+        l1=Button(self.a,text='Add Books',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.addbook).place(x=12,y=100)
+        l2=Button(self.a,text='Search Books',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.search).place(x=12,y=200)
 
-        self.bill_no=StringVar()
-        x=random.randint(1000,9999)
-        self.bill_no.set(str(x))
+        l4=Button(self.a,text='All Books',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.all).place(x=12,y=300)
+        l4=Button(self.a,text='<< Main Menu',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.mainmenu).place(x=12,y=500)
 
-        self.search_bill=StringVar()
+    def addbook(self):
+        self.aid=StringVar()
+        self.aauthor=StringVar()
+        self.aname=StringVar()
+        self.acopies=IntVar()
+        self.agenre=StringVar()
+        self.aloc=StringVar()
+        self.f1=Frame(self.a,height=500,width=650,bg='black')
+        self.f1.place(x=500,y=100)
+        l1=Label(self.f1,text='Book ID : ',font='Papyrus 12 bold',fg='Orange',bg='Black',pady=1).place(x=50,y=50)
+        e1=Entry(self.f1,width=45,bg='orange',fg='black',textvariable=self.aid).place(x=150,y=50)
+        l2=Label(self.f1,text='Title : ',font='Papyrus 12 bold',fg='Orange',bg='Black',pady=1).place(x=50,y=100)
+        e2=Entry(self.f1,width=45,bg='orange',fg='black',textvariable=self.aname).place(x=150,y=100)
+        l3=Label(self.f1,text='Author : ',font='Papyrus 12 bold',fg='orange',bg='Black',pady=1).place(x=50,y=150)
+        e3=Entry(self.f1,width=45,bg='orange',fg='black',textvariable=self.aauthor).place(x=150,y=150)
+        l4=Label(self.f1,text='Genre : ',font='Papyrus 12 bold',fg='orange',bg='Black',pady=1).place(x=50,y=200)
+        e2=Entry(self.f1,width=45,bg='orange',fg='black',textvariable=self.agenre).place(x=150,y=200)
+        l4=Label(self.f1,text='Copies : ',font='Papyrus 12 bold',fg='orange',bg='Black',pady=1).place(x=50,y=250)
+        e2=Entry(self.f1,width=45,bg='orange',fg='black',textvariable=self.acopies).place(x=150,y=250)
+        l5=Label(self.f1,text='Location : ',font='Papyrus 12 bold',fg='orange',bg='Black',pady=1).place(x=50,y=300)
+        e3=Entry(self.f1,width=45,bg='orange',fg='black',textvariable=self.aloc).place(x=150,y=300)
+        self.f1.grid_propagate(0)
+        b1=Button(self.f1,text='Add',font='Papyrus 10 bold',fg='black',bg='orange',width=15,bd=3,command=self.adddata).place(x=150,y=400)
+        b2=Button(self.f1,text='Back',font='Papyrus 10 bold',fg='black',bg='orange',width=15,bd=3,command=self.rm).place(x=350,y=400)
 
-        #=======Customer Detail Frame
-        F1=LabelFrame(self.root,bd=10,relief=GROOVE,text="Customer Details",font=("times new roman",15,"bold"),fg="firebrick",bg=bg_color)
-        F1.place(x=0,y=80,relwidth=1)
+    def rm(self):
+        self.f1.destroy()
+    def mainmenu(self):
+        self.root.destroy()
+        a=menu()
 
-        cname_lbl=Label(F1,text="Customer Name",bg=bg_color,fg="white",font=("times new roman",15,"bold")).grid(row=0,column=0,padx=20,pady=20)
-        cname_txt=Entry(F1,width=15,textvariable=self.c_name,font="arial 15",bd=7,relief=SUNKEN).grid(row=0,column=1,pady=5,padx=10)
+    def adddata(self):
+        a=self.aid.get()
+        b=self.aname.get()
+        c=self.aauthor.get()
+        d=self.agenre.get()
+        e=self.acopies.get()
+        f=self.aloc.get()
+        conn=sqlite3.connect('test.db')
+        try:
+            if (a and b and c and d  and f)=="":
+                messagebox.showinfo("Error","Fields cannot be empty.")
+            else:
+                conn.execute("insert into book_info \
+                values (?,?,?,?,?,?)",(a.capitalize(),b.capitalize(),c.capitalize(),d.capitalize(),e,f.capitalize(),));
+                conn.commit()
+                messagebox.showinfo("Success","Book added successfully")
+        except sqlite3.IntegrityError:
+            messagebox.showinfo("Error","Book is already present.")
 
-        cphn_lbl = Label(F1, text="Phone No.", bg=bg_color, fg="white", font=("times new roman", 15, "bold")).grid(row=0, column=2, padx=20, pady=20)
-        cphn_txt = Entry(F1, width=15,textvariable=self.c_phone, font="arial 15", bd=7, relief=SUNKEN).grid(row=0, column=3, pady=5, padx=10)
 
-        c_bill_lbl = Label(F1, text="Bill Number", bg=bg_color, fg="white", font=("times new roman", 15, "bold")).grid(row=0, column=4, padx=20, pady=20)
-        c_bill_txt = Entry(F1, width=15,textvariable=self.search_bill, font="arial 15", bd=7, relief=SUNKEN).grid(row=0, column=5, pady=5, padx=10)
+        conn.close()
 
-        bill_btn=Button(F1,text="Search",command=self.find_bill, width=10,bd=7,font="arial 12 bold").grid(row=0,column=6,padx=10,pady=10)
+    def search(self):
+        #self.search.state('zoomed')
+        self.sid=StringVar()
+        self.f1=Frame(self.a,height=500,width=650,bg='black')
+        self.f1.place(x=500,y=100)
+        l1=Label(self.f1,text='Book ID/Title/Author/Genre: ',font=('Papyrus 10 bold'),bd=2, fg='orange',bg='black').place(x=20,y=40)
+        e1=Entry(self.f1,width=25,bd=5,bg='orange',fg='black',textvariable=self.sid).place(x=260,y=40)
+        b1=Button(self.f1,text='Search',bg='orange',font='Papyrus 10 bold',width=9,bd=2,command=self.serch1).place(x=500,y=37)
+        b1=Button(self.f1,text='Back',bg='orange',font='Papyrus 10 bold',width=10,bd=2,command=self.rm).place(x=250,y=450)
 
-        #=====Cosmetics Frame======
-        F2=LabelFrame(self.root,bd=10, relief=GROOVE, text="Cosmetics", font=("times new roman", 15, "bold"),fg="firebrick", bg=bg_color)
-        F2.place(x=5, y=180,width=325,height=380)
+    def create_tree(self,plc,lists):
+        self.tree=ttk.Treeview(plc,height=13,column=(lists),show='headings')
+        n=0
+        while n is not len(lists):
+            self.tree.heading("#"+str(n+1),text=lists[n])
+            self.tree.column(""+lists[n],width=100)
+            n=n+1
+        return self.tree
 
-        Bath_Soap_lbl=Label(F2,text="Bath Soap",font=("times new roman",16,"bold"),bg=bg_color,fg="black").grid(row=0,column=0,padx=10,pady=10,sticky="w")
-        Bath_Soap_txt=Entry(F2,width=10,textvariable=self.Bath_Soap,font=("times new roman",16,"bold"),bd=5,relief=SUNKEN).grid(row=0,column=1,padx=10,pady=10)
 
-        Face_Cream_lbl = Label(F2, text="Face Cream", font=("times new roman", 16, "bold"), bg=bg_color, fg="black").grid(row=1, column=0, padx=10, pady=10, sticky="w")
-        Face_Cream_txt = Entry(F2, width=10,textvariable=self.Face_Cream, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=1, column=1,padx=10, pady=10)
+    def serch1(self):
+        k=self.sid.get()
+        if k!="":
+            self.list4=("BOOK ID","TITLE","AUTHOR","GENRE","COPIES","LOCATION")
+            self.trees=self.create_tree(self.f1,self.list4)
+            self.trees.place(x=25,y=150)
+            conn=sqlite3.connect('test.db')
 
-        Nail_Polish_lbl = Label(F2, text="Nail Polish", font=("times new roman", 16, "bold"), bg=bg_color, fg="black").grid(row=2, column=0, padx=10, pady=10, sticky="w")
-        Nail_Polish_txt = Entry(F2, width=10,textvariable=self.Nailpolish, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=2, column=1,padx=10, pady=10)
+            c=conn.execute("select * from book_info where ID=? OR TITLE=? OR AUTHOR=? OR GENRE=?",(k.capitalize(),k.capitalize(),k.capitalize(),k.capitalize(),))
+            a=c.fetchall()
+            if len(a)!=0:
+                for row in a:
 
-        Lipstick_lbl = Label(F2, text="Lipstick", font=("times new roman", 16, "bold"), bg=bg_color, fg="black").grid(row=3, column=0, padx=10, pady=10, sticky="w")
-        Lipstick_txt = Entry(F2, width=10,textvariable=self.Lipstick, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=3, column=1,padx=10, pady=10)
+                    self.trees.insert("",END,values=row)
+                conn.commit()
+                conn.close()
+                self.trees.bind('<<TreeviewSelect>>')
+                self.variable = StringVar(self.f1)
+                self.variable.set("Select Action:")
 
-        Eyeliner_lbl = Label(F2, text="Eyeliner", font=("times new roman", 16, "bold"), bg=bg_color, fg="black").grid(row=4, column=0, padx=10, pady=10, sticky="w")
-        Eyeliner_txt = Entry(F2, width=10,textvariable=self.Eyeliner, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=4, column=1,padx=10, pady=10)
 
-        Body_Lotion_lbl = Label(F2, text="Body Lotion", font=("times new roman", 16, "bold"), bg=bg_color, fg="black").grid(row=5, column=0, padx=10, pady=10, sticky="w")
-        Body_Lotion_txt = Entry(F2, width=10,textvariable=self.Body_Lotion, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=5, column=1,padx=10, pady=10)
+                self.cm =ttk.Combobox(self.f1,textvariable=self.variable ,state='readonly',font='Papyrus 15 bold',height=50,width=15,)
+                self.cm.config(values =('Add Copies', 'Delete Copies', 'Delete Book'))
 
-        #====Grocery Frame======
-        F3 = LabelFrame(self.root, bd=10, relief=GROOVE, text="Grocery", font=("times new roman", 15, "bold"),fg="firebrick", bg=bg_color)
-        F3.place(x=340, y=180, width=325, height=380)
+                self.cm.place(x=50,y=100)
+                self.cm.pack_propagate(0)
 
-        g1_lbl = Label(F3, text="Rice", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        g1_txt = Entry(F3, width=10,textvariable=self.Rice, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=0,column=1,padx=10,pady=10)
 
-        g2_lbl = Label(F3, text="Coffee", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=1, column=0, padx=10, pady=10, sticky="w")
-        g2_txt = Entry(F3, width=10,textvariable=self.Coffee, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=1,column=1,padx=10,pady=10)
+                self.cm.bind("<<ComboboxSelected>>",self.combo)
+                self.cm.selection_clear()
+            else:
+                messagebox.showinfo("Error","Data not found")
 
-        g3_lbl = Label(F3, text="Sugar", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=2, column=0, padx=10, pady=10, sticky="w")
-        g3_txt = Entry(F3, width=10,textvariable=self.Sugar, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=2,column=1,padx=10,pady=10)
 
-        g4_lbl = Label(F3, text="Cheese", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=3, column=0, padx=10, pady=10, sticky="w")
-        g4_txt = Entry(F3, width=10,textvariable=self.Cheese, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=3,column=1,padx=10,pady=10)
 
-        g5_lbl = Label(F3, text="Bread", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=4, column=0, padx=10, pady=10, sticky="w")
-        g5_txt = Entry(F3, width=10, textvariable=self.Bread, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=4,column=1,padx=10,pady=10)
-
-        g6_lbl = Label(F3, text="Eggs ", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=5, column=0, padx=10, pady=10, sticky="w")
-        g6_txt = Entry(F3, width=10,textvariable=self.Eggs, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=5,column=1,padx=10,pady=10)
-
-        #====Cold Drinks Frame======
-        F4 = LabelFrame(self.root, bd=10, relief=GROOVE, text="Cold Drinks", font=("times new roman", 15, "bold"),fg="firebrick", bg=bg_color)
-        F4.place(x=670, y=180, width=325, height=380)
-
-        c1_lbl = Label(F4, text="Coke", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        c1_txt = Entry(F4, width=10,textvariable=self.Coke, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=0,column=1,padx=10,pady=10)
-
-        c2_lbl = Label(F4, text="Sprite", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=1, column=0, padx=10, pady=10, sticky="w")
-        c2_txt = Entry(F4, width=10,textvariable=self.Sprite, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=1,column=1,padx=10,pady=10)
-
-        c3_lbl = Label(F4, text="Dew", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=2, column=0, padx=10, pady=10, sticky="w")
-        c3_txt = Entry(F4, width=10,textvariable=self.Dew, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=2,column=1,padx=10,pady=10)
-
-        c4_lbl = Label(F4, text="Pepsi", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=3, column=0, padx=10, pady=10, sticky="w")
-        c4_txt = Entry(F4, width=10, textvariable=self.Pepsi,font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=3,column=1,padx=10,pady=10)
-
-        c5_lbl = Label(F4, text="Red Bull", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=4, column=0, padx=10, pady=10, sticky="w")
-        c5_txt = Entry(F4, width=10,textvariable=self.Red_Bull, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=4,column=1,padx=10,pady=10)
-
-        c6_lbl = Label(F4, text="Fruit Juice", font=("times new roman", 16, "bold"), bg=bg_color,fg="black").grid(row=5, column=0, padx=10, pady=10, sticky="w")
-        c6_txt = Entry(F4, width=10,textvariable=self.Fruit_Juice, font=("times new roman", 16, "bold"), bd=5, relief=SUNKEN).grid(row=5,column=1,padx=10,pady=10)
-
-        #====Bill Area======
-        F5=Frame(self.root, bd=10, relief=GROOVE)
-        F5.place(x=1010, y=180, width=350,height=380)
-        bill_title=Label(F5,text="Bill Area",font="arial 15 bold", bd=7,relief=GROOVE).pack(fill=X)
-        scrol_y=Scrollbar(F5,orient=VERTICAL)
-        self.txtarea=Text(F5,yscrollcommand=scrol_y.set)
-        scrol_y.pack(side=RIGHT,fill=Y)
-        scrol_y.config(command=self.txtarea.yview)
-        self.txtarea.pack(fill=BOTH,expand=1)
-
-        #====Button Frame======
-        F6=LabelFrame(self.root, bd=10, relief=GROOVE, text="Bill Menu", font=("times new roman", 15, "bold"),fg="firebrick", bg=bg_color)
-        F6.place(x=0,y=560,relwidth=1,height=140)
-        m1_lbl=Label(F6,text="Total Cosmetics Price",bg=bg_color,fg="white",font=("times new roman",14,"bold")).grid(row=0,column=0,padx=20,pady=1,sticky="w")
-        m1_txt=Entry(F6,width=18,textvariable=self.Cosmetic_Price,font="arial 10 bold", bd=7,relief=SUNKEN).grid(row=0,column=1,padx=10,pady=1)
-
-        m2_lbl=Label(F6,text="Total Grocery Price",bg=bg_color,fg="white",font=("times new roman",14,"bold")).grid(row=1,column=0,padx=20,pady=1,sticky="w")
-        m2_txt=Entry(F6,width=18,textvariable=self.Grocery_Price,font="arial 10 bold", bd=7,relief=SUNKEN).grid(row=1,column=1,padx=10,pady=1)
-
-        m3_lbl=Label(F6,text="Total Cold Drinks Price",bg=bg_color,fg="white",font=("times new roman",14,"bold")).grid(row=2,column=0,padx=20,pady=1,sticky="w")
-        m3_txt=Entry(F6,width=18,textvariable=self.Cold_Drinks_Price,font="arial 10 bold", bd=7,relief=SUNKEN).grid(row=2,column=1,padx=10,pady=1)
-
-        c1_lbl=Label(F6,text="Cosmetics Tax",bg=bg_color,fg="white",font=("times new roman",14,"bold")).grid(row=0,column=2,padx=20,pady=1,sticky="w")
-        c1_txt=Entry(F6,width=18,textvariable=self.Cosmetic_Tax,font="arial 10 bold", bd=7,relief=SUNKEN).grid(row=0,column=3,padx=10,pady=1)
-
-        c2_lbl=Label(F6,text="Grocery Tax",bg=bg_color,fg="white",font=("times new roman",14,"bold")).grid(row=1,column=2,padx=20,pady=1,sticky="w")
-        c2_txt=Entry(F6,width=18,textvariable=self.Grocery_Tax,font="arial 10 bold", bd=7,relief=SUNKEN).grid(row=1,column=3,padx=10,pady=1)
-
-        c3_lbl=Label(F6,text="Cold Drinks Tax",bg=bg_color,fg="white",font=("times new roman",14,"bold")).grid(row=2,column=2,padx=20,pady=1,sticky="w")
-        c3_txt=Entry(F6,width=18,textvariable=self.Cold_Drinks_Tax,font="arial 10 bold", bd=7,relief=SUNKEN).grid(row=2,column=3,padx=10,pady=1)
-
-        btn_F=Frame(F6, bd=7,relief=GROOVE)
-        btn_F.place(x=750, width=580,height=105)
-
-        Total_btn=Button(btn_F,command=self.total,text="Total",bg="mediumpurple",fg="white",bd=2,pady=15,width=10,font="arial 15 bold ").grid(row=0,column=0,padx=5,pady=5)
-        Make_Bill_btn = Button(btn_F, text="Make Bill",command=self.bill_area, bg="mediumpurple", fg="white", bd=2, pady=15, width=10,font="arial 15  bold ").grid(row=0, column=1, padx=5, pady=5)
-        Clear_btn = Button(btn_F, text="Clear",command=self.clear_data, bg="mediumpurple", fg="white", bd=2, pady=15, width=10,font="arial 15 bold ").grid(row=0, column=2, padx=5, pady=5)
-        Exit_btn = Button(btn_F, text="Exit",command=self.Exit_app, bg="mediumpurple", fg="white", bd=2, pady=15, width=10,font="arial 15 bold ").grid(row=0, column=3, padx=5, pady=5)
-        self.welcome_bill()
-
-    def total(self):
-        self.c_s_p=self.Bath_Soap.get()*40
-        self.c_fc_p=self.Face_Cream.get()*200
-        self.c_np_p = self.Nailpolish.get() *70
-        self.c_ls_p = self.Lipstick.get() *120
-        self.c_el_p = self.Eyeliner.get() *100
-        self.c_bl_p = self.Body_Lotion.get() *190
-
-        self.Total_Cosmetic_Price=float(
-                                    self.c_s_p+
-                                    self.c_fc_p+
-                                    self.c_np_p+
-                                    self.c_ls_p+
-                                    self.c_el_p+
-                                    self.c_bl_p
-                                    )
-        self.Cosmetic_Price.set("Rs. "+str(self.Total_Cosmetic_Price))
-        self.c_tax=round((self.Total_Cosmetic_Price*0.05),2)
-        self.Cosmetic_Tax.set("Rs. "+str(self.c_tax))
-
-        self.g_r_p=self.Rice.get()*450
-        self.g_c_p=self.Coffee.get()*300
-        self.g_s_p=self.Sugar.get()*170
-        self.g_ch_p=self.Cheese.get()*220
-        self.g_b_p=self.Bread.get() * 80
-        self.g_e_p=self.Eggs.get() * 20
-        self.Total_Grocery_Price = float(
-                                    self.g_r_p+
-                                    self.g_c_p+
-                                    self.g_s_p+
-                                    self.g_ch_p+
-                                    self.g_b_p+
-                                    self.g_e_p
-                                    )
-        self.Grocery_Price.set("Rs. "+str(self.Total_Grocery_Price))
-        self.g_tax=round((self.Total_Grocery_Price*0.1),2)
-        self.Grocery_Tax.set("Rs. "+str(self.g_tax))
-
-        self.d_c_p=self.Coke.get()*250
-        self.d_s_p=self.Sprite.get() * 210
-        self.d_d_p=self.Dew.get() * 230
-        self.d_p_p=self.Pepsi.get() * 250
-        self.d_rb_p=self.Red_Bull.get() * 150
-        self.d_fj_p=self.Fruit_Juice.get() * 220
-        self.Total_Cold_Drinks_Price = float(
-                                    self.d_c_p+
-                                    self.d_s_p+
-                                    self.d_d_p+
-                                    self.d_p_p+
-                                    self.d_rb_p+
-                                    self.d_fj_p
-                                    )
-        self.Cold_Drinks_Price.set("Rs. "+str(self.Total_Cold_Drinks_Price))
-        self.d_tax=round((self.Total_Cold_Drinks_Price*0.05),2)
-        self.Cold_Drinks_Tax.set("Rs. "+str(self.d_tax))
-
-        self.Total_Bill=float(  self.Total_Cosmetic_Price+
-                                self.Total_Grocery_Price+
-                                self.Total_Cold_Drinks_Price+
-                                self.c_tax+
-                                self.g_tax+
-                                self.d_tax
-                                )
-
-    def welcome_bill(self):
-        self.txtarea.delete('1.0',END)
-        self.txtarea.insert(END,"\tWelcome to BigHit Mart\n")
-        self.txtarea.insert(END,f"\n Bill Number : {self.bill_no.get()}")
-        self.txtarea.insert(END,f"\nCustomer Name : {self.c_name.get()}")
-        self.txtarea.insert(END,f"\nPhone Number : {self.c_phone.get()}")
-        self.txtarea.insert(END, f"\n======================================")
-        self.txtarea.insert(END, f"\nProducts\t\tOTY\tPrice")
-        self.txtarea.insert(END, f"\n======================================")
-
-    def bill_area(self):
-        if self.c_name.get()==""or self.c_phone.get()=="":
-            messagebox.showerror("Error","Customer details are required.")
-        elif self.Cosmetic_Price.get()=="Rs. 0.0" and self.Grocery_Price.get()=="Rs. 0.0" and self.Cold_Drinks_Price.get()=="Rs. 0.0":
-            messagebox.showerror("Error", "No product purchased.")
         else:
+            messagebox.showinfo("Error","Search field cannot be empty.")
 
-            self.welcome_bill()
-            #=====Cosmetics=====
-            if self.Bath_Soap.get()!=0:
-                self.txtarea.insert(END,f"\n Bath Soap\t\t{self.Bath_Soap.get()}\t\t{self.c_s_p}")
-            if self.Face_Cream.get()!=0:
-                self.txtarea.insert(END,f"\n Face Cream\t\t{self.Face_Cream.get()}\t\t{self.c_fc_p}")
-            if self.Nailpolish.get()!=0:
-                self.txtarea.insert(END,f"\n Nailpolish\t\t{self.Nailpolish.get()}\t\t{self.c_np_p}")
-            if self.Lipstick.get()!=0:
-                self.txtarea.insert(END,f"\n Lipstick\t\t{self.Lipstick.get()}\t\t{self.c_ls_p}")
-            if self.Eyeliner.get()!=0:
-                self.txtarea.insert(END,f"\n Eyeliner\t\t{self.Eyeliner.get()}\t\t{self.c_el_p}")
-            if self.Body_Lotion.get()!=0:
-                self.txtarea.insert(END,f"\n Body Lotion\t\t{self.Body_Lotion.get()}\t\t{self.c_bl_p}")
 
-    #=====Grocery=====
-            if self.Rice.get()!=0:
-                self.txtarea.insert(END,f"\n Rice\t\t{self.Rice.get()}\t\t{self.g_r_p}")
-            if self.Coffee.get()!=0:
-                self.txtarea.insert(END,f"\n Coffee\t\t{self.Coffee.get()}\t\t{self.g_c_p}")
-            if self.Sugar.get()!=0:
-                self.txtarea.insert(END,f"\n Sugar\t\t{self.Sugar.get()}\t\t{self.g_s_p}")
-            if self.Cheese.get()!=0:
-                self.txtarea.insert(END,f"\n Cheese\t\t{self.Cheese.get()}\t\t{self.g_ch_p}")
-            if self.Bread.get()!=0:
-                self.txtarea.insert(END,f"\n Bread\t\t{self.Bread.get()}\t\t{self.g_b_p}")
-            if self.Eggs.get()!=0:
-                self.txtarea.insert(END,f"\n Eggs\t\t{self.Eggs.get()}\t\t{self.g_e_p}")
+    def combo(self,event):
+        self.var_Selected = self.cm.current()
+        #l7=Label(self.f1,text='copies to update: ',font='Papyrus 10 bold',bd=1).place(x=250,y=700)
+        if self.var_Selected==0:
+            self.copies(self.var_Selected)
+        elif self.var_Selected==1:
+            self.copies(self.var_Selected)
+        elif self.var_Selected==2:
+            self.deleteitem()
+    def deleteitem(self):
+        try:
+            self.curItem = self.trees.focus()
 
-    #=====Cold Drinks=====
-            if self.Coke.get()!=0:
-                self.txtarea.insert(END,f"\n Bath Soap\t\t{self.Bath_Soap.get()}\t\t{self.c_s_p}")
-            if self.Sprite.get()!=0:
-                self.txtarea.insert(END,f"\n Sprite\t\t{self.Sprite.get()}\t\t{self.d_s_p}")
-            if self.Dew.get()!=0:
-                self.txtarea.insert(END,f"\n Dew\t\t{self.Dew.get()}\t\t{self.d_d_p}")
-            if self.Pepsi.get()!=0:
-                self.txtarea.insert(END,f"\n Pepsi\t\t{self.Pepsi.get()}\t\t{self.d_p_p}")
-            if self.Red_Bull.get()!=0:
-                self.txtarea.insert(END,f"\n Red Bull\t\t{self.Red_Bull.get()}\t\t{self.d_rb_p}")
-            if self.Fruit_Juice.get()!=0:
-                self.txtarea.insert(END,f"\n Fruit Juice\t\t{self.Fruit_Juice.get()}\t\t{self.d_fj_p}")
+            self.c1=self.trees.item(self.curItem,"values")[0]
+            b1=Button(self.f1,text='Update',font='Papyrus 10 bold',width=9,bd=3,command=self.delete2).place(x=500,y=97)
 
-            self.txtarea.insert(END, f"\n-------------------------------------")
-            if self.Cosmetic_Tax.get()!="Rs. 0.0":
-                self.txtarea.insert(END, f"\nCosmetic Tax\t\t\t{self.Cosmetic_Tax.get()}")
-            if self.Grocery_Tax.get()!="Rs. 0.0":
-                self.txtarea.insert(END, f"\nGrocery Tax\t\t\t{self.Grocery_Tax.get()}")
-            if self.Cold_Drinks_Tax.get()!="Rs. 0.0":
-                self.txtarea.insert(END, f"\nCold Drinks Tax\t\t\t{self.Cold_Drinks_Tax.get()}")
-
-                self.txtarea.insert(END, f"\nTotal Bill\t\t\t Rs. {self.Total_Bill}")
-                self.txtarea.insert(END, f"\n-------------------------------------")
-                self.save_bill()
-
-    def save_bill(self):
-        op=messagebox.askyesno("Save Bill","Do you want to save the Bill?")
-        if op>0:
-            self.bill_data=self.txtarea.get('1.0',END)
-            f1=open("bills/"+str(self.bill_no.get())+".txt","w")
-            f1.write(self.bill_data)
-            f1.close()
-            messagebox.showinfo("Saved",f"Bill no: {self.bill_no.get()} saved successfully.")
+        except:
+            messagebox.showinfo("Empty","Please select something.")
+    def delete2(self):
+        conn=sqlite3.connect('test.db')
+        cd=conn.execute("select * from book_issued where BOOK_ID=?",(self.c1,))
+        ab=cd.fetchall()
+        if ab!=0:
+            conn.execute("DELETE FROM book_info where ID=?",(self.c1,));
+            conn.commit()
+            messagebox.showinfo("Successful","Book Deleted sucessfully.")
+            self.trees.delete(self.curItem)
         else:
-            return
-    def find_bill(self):
-        present="No"
-        for i in os.listdir("bills/"):
-            if i.split('.')[0]==self.search_bill.get():
-                f1=open(f"bills/{i}","r")
-                self.txtarea.delete('1.0',END)
-                for d in f1:
-                    self.txtarea.insert(END,d)
-                f1.close()
-                present="Yes"
-        if present=="No":
-            messagebox.showerror("Error","Invalid Bill No.")
-    def clear_data(self):
-        op=messagebox.askyesno("Clear", "Do you really want to clear the data?")
-        if op>0:
-            #=======cosmetics===========
-            self.Bath_Soap.set(0)
-            self.Face_Cream.set(0)
-            self.Nailpolish.set(0)
-            self.Lipstick.set(0)
-            self.Eyeliner.set(0)
-            self.Body_Lotion.set(0)
-            #=======grocery===========
-            self.Rice.set(0)
-            self.Coffee.set(0)
-            self.Sugar.set(0)
-            self.Cheese.set(0)
-            self.Bread.set(0)
-            self.Eggs.set(0)
-            #=======cosmetics===========
-            self.Coke.set(0)
-            self.Sprite.set(0)
-            self.Dew.set(0)
-            self.Pepsi.set(0)
-            self.Red_Bull.set(0)
-            self.Fruit_Juice.set(0)
-            #========Total Products Price and Tax Variables=======
-            self.Cosmetic_Price.set("")
-            self.Grocery_Price.set("")
-            self.Cold_Drinks_Price.set("")
+            messagebox.showinfo("Error","Book is Issued.\nBook cannot be deleted.")
+        conn.commit()
+        conn.close()
 
-            self.Cosmetic_Tax.set("")
-            self.Grocery_Tax.set("")
-            self.Cold_Drinks_Tax.set("")
 
-            #==========Customer=============
-            self.c_name.set("")
-            self.c_phone.set("")
+    def copies(self,varr):
+        try:
+            curItem = self.trees.focus()
+            self.c1=self.trees.item(curItem,"values")[0]
+            self.c2=self.trees.item(curItem,"values")[4]
+            self.scop=IntVar()
+            self.e5=Entry(self.f1,width=20,textvariable=self.scop)
+            self.e5.place(x=310,y=100)
+            if varr==0:
+                b5=Button(self.f1,text='Update',font='Papyrus 10 bold',bg='orange',fg='black',width=9,bd=3,command=self.copiesadd).place(x=500,y=97)
+            if varr==1:
+                b6=Button(self.f1,text='Update',font='Papyrus 10 bold',bg='orange',fg='black',width=9,bd=3,command=self.copiesdelete).place(x=500,y=97)
+        except:
+            messagebox.showinfo("Empty","Please select something.")
 
-            self.bill_no.set("")
-            x=random.randint(1000,9999)
-            self.bill_no.set(str(x))
+    def copiesadd(self):
+        no=self.e5.get()
+        if int(no)>=0:
 
-            self.search_bill.set("")
-            self.welcome_bill()
+            conn=sqlite3.connect('test.db')
 
-    def Exit_app(self):
-        op=messagebox.askyesno("Exit","Are you sure you want to exit?")
-        if op>0:
-            self.root.destroy()
+            conn.execute("update book_info set COPIES=COPIES+? where ID=?",(no,self.c1,))
+            conn.commit()
 
-root=Tk()
-obj=Bill_App(root)
+            messagebox.showinfo("Updated","Copies added sucessfully.")
+            self.serch1()
+            conn.close()
+
+        else:
+            messagebox.showinfo("Error","No. of copies cannot be negative.")
+
+    def copiesdelete(self):
+        no1=self.e5.get()
+        if int(no1)>=0:
+            if int(no1)<=int(self.c2):
+                conn=sqlite3.connect('test.db')
+
+                conn.execute("update book_info set COPIES=COPIES-? where ID=?",(no1,self.c1,))
+                conn.commit()
+                conn.close()
+
+                messagebox.showinfo("Updated","Deleted sucessfully")
+                self.serch1()
+
+            else:
+                messagebox.showinfo("Maximum","No. of copies to delete exceed available copies.")
+        else:
+            messagebox.showinfo("Error","No. of copies cannot be negative.")
+
+    def all(self):
+        self.f1=Frame(self.a,height=500,width=650,bg='black')
+        self.f1.place(x=500,y=100)
+        b1=Button(self.f1,text='Back',bg='orange' ,fg='black',width=10,bd=3,command=self.rm).place(x=250,y=400)
+        conn=sqlite3.connect('test.db')
+        self.list3=("BOOK ID","TITLE","AUTHOR","GENRE","COPIES","LOCATION")
+        self.treess=self.create_tree(self.f1,self.list3)
+        self.treess.place(x=25,y=50)
+        c=conn.execute("select * from book_info")
+        g=c.fetchall()
+        if len(g)!=0:
+            for row in g:
+                self.treess.insert('',END,values=row)
+        conn.commit()
+        conn.close()
+
+    def student(self):
+        self.a.destroy()
+        self.a=self.canvases(image2)
+        l1=Button(self.a,text='Issue book',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.issue).place(x=12,y=100)
+        l2=Button(self.a,text='Return Book',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.returnn).place(x=12,y=200)
+        l3=Button(self.a,text='Student Activity',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.activity).place(x=12,y=300)
+        l4=Button(self.a,text='<< Main Menu',font='Papyrus 22 bold',fg='Orange',bg='Black',width=15,padx=10,command=self.mainmenu).place(x=12,y=600)
+
+
+
+
+    def issue(self):
+        self.aidd=StringVar()
+        self.astudentt=StringVar()
+        self.f1=Frame(self.a,height=550,width=500,bg='black')
+        self.f1.place(x=500,y=100)
+        l1=Label(self.f1,text='Book ID : ',font='papyrus 15 bold',bg='black',fg='orange').place(x=50,y=100)
+        e1=Entry(self.f1,width=25,bd=4,bg='orange',textvariable=self.aidd).place(x=180,y=100)
+        l2=Label(self.f1,text='Student Id : ',font='papyrus 15 bold',bg='black',fg='orange').place(x=50,y=150)
+        e2=Entry(self.f1,width=25,bd=4,bg='orange',textvariable=self.astudentt).place(x=180,y=150)
+        b1=Button(self.f1,text='Back',font='Papyrus 10 bold',fg='black',bg='orange',width=10,bd=3,command=self.rm).place(x=50,y=250)
+        b1=Button(self.f1,text='Issue',font='Papyrus 10 bold',fg='black',bg='orange',width=10,bd=3,command=self.issuedbook).place(x=200,y=250)
+
+    def issuedbook(self):
+        bookid=self.aidd.get()
+        studentid=self.astudentt.get()
+        conn=sqlite3.connect('test.db')
+        cursor=conn.cursor()
+        cursor.execute("select ID,COPIES from book_info where ID=?",(bookid.capitalize(),))
+        an=cursor.fetchall()
+        if (bookid and studentid!=""):
+            if an!=[]:
+                for i in an:
+                    if i[1]>0:
+                        try:
+                            conn.execute("insert into book_issued \
+                            values (?,?,date('now'),date('now','+7 day'))",(bookid.capitalize(),studentid.capitalize(),));
+                            conn.commit()
+                            conn.execute("update book_info set COPIES=COPIES-1 where ID=?",(bookid.capitalize(),))
+                            conn.commit()
+                            conn.close()
+                            messagebox.showinfo("Updated","Book Issued sucessfully.")
+                        except:
+                            messagebox.showinfo("Error","Book is already issued by student.")
+
+                    else:
+                        messagebox.showinfo("Unavailable","Book unavailable.\nThere are 0 copies of the book.")
+            else:
+                messagebox.showinfo("Error","No such Book in Database.")
+        else:
+            messagebox.showinfo("Error","Fields cannot be blank.")
+
+    def returnn(self):
+        self.aidd=StringVar()
+        self.astudentt=StringVar()
+
+        self.f1=Frame(self.a,height=550,width=500,bg='black')
+        self.f1.place(x=500,y=100)
+        l1=Label(self.f1,text='Book ID : ',font='papyrus 15 bold',fg='orange', bg='black').place(x=50,y=100)
+        e1=Entry(self.f1,width=25,bd=4,bg='orange',textvariable=self.aidd).place(x=180,y=100)
+        l2=Label(self.f1,text='Student Id : ',font='papyrus 15 bold',fg='orange', bg='black').place(x=50,y=150)
+        e2=Entry(self.f1,width=25,bd=4,bg='orange',textvariable=self.astudentt).place(x=180,y=150)
+        b1=Button(self.f1,text='Back',font='Papyrus 10 bold',bg='orange',fg='black',width=10,bd=3,command=self.rm).place(x=50,y=250)
+        b1=Button(self.f1,text='Return',font='Papyrus 10 bold',bg='orange',fg='black',width=10,bd=3,command=self.returnbook).place(x=200,y=250)
+        self.f1.grid_propagate(0)
+
+    def returnbook(self):
+        a=self.aidd.get()
+        b=self.astudentt.get()
+
+        conn=sqlite3.connect('test.db')
+
+        fg=conn.execute("select ID from book_info where ID=?",(a.capitalize(),))
+        fh=fg.fetchall()
+        conn.commit()
+        if fh!=None:
+            c=conn.execute("select * from book_issued where BOOK_ID=? and STUDENT_ID=?",(a.capitalize(),b.capitalize(),))
+            d=c.fetchall()
+            conn.commit()
+            if len(d)!=0:
+                c.execute("DELETE FROM book_issued where BOOK_ID=? and STUDENT_ID=?",(a.capitalize(),b.capitalize(),));
+                conn.commit()
+                conn.execute("update book_info set COPIES=COPIES+1 where ID=?",(a.capitalize(),))
+                conn.commit()
+
+                messagebox.showinfo("Success","Book Returned sucessfully.")
+            else:
+                messagebox.showinfo("Error","Data not found.")
+        else:
+            messagebox.showinfo("Error","No such book.\nPlease add the book in database.")
+        conn.commit()
+        conn.close()
+
+    def activity(self):
+        self.aidd=StringVar()
+        self.astudentt=StringVar()
+        self.f1=Frame(self.a,height=550,width=500,bg='black')
+        self.f1.place(x=500,y=80)
+        self.list2=("BOOK ID","STUDENT ID","ISSUE DATE","RETURN DATE")
+        self.trees=self.create_tree(self.f1,self.list2)
+        self.trees.place(x=50,y=150)
+
+
+        l1=Label(self.f1,text='Book/Student ID : ',font='Papyrus 15 bold',fg='Orange',bg='black').place(x=50,y=30)
+        e1=Entry(self.f1,width=20,bd=4,bg='orange',textvariable=self.aidd).place(x=280,y=35)
+        #l2=Label(self.f1,text='Student Id : ',font='papyrus 15 bold',fg='orange',bg='black').place(x=50,y=80)
+        #e2=Entry(self.f1,width=20,bd=4,bg='orange',textvariable=self.astudentt).place(x=180,y=80)
+        b1=Button(self.f1,text='Back',bg='orange',font='Papyrus 10 bold',width=10,bd=3,command=self.rm).place(x=340,y=450)
+        b1=Button(self.f1,text='Search',bg='orange',font='Papyrus 10 bold',width=10,bd=3,command=self.searchact).place(x=40,y=450)
+        b1=Button(self.f1,text='All',bg='orange',font='Papyrus 10 bold',width=10,bd=3,command=self.searchall).place(x=190,y=450)
+        self.f1.grid_propagate(0)
+
+    def searchact(self):
+        self.list2=("BOOK ID","STUDENT ID","ISSUE DATE","RETURN DATE")
+        self.trees=self.create_tree(self.f1,self.list2)
+        self.trees.place(x=50,y=150)
+        conn=sqlite3.connect('test.db')
+        bid=self.aidd.get()
+        #sid=self.astudentt.get()
+        try:
+            c=conn.execute("select * from book_issued where BOOK_ID=? or STUDENT_ID=?",(bid.capitalize(),bid.capitalize(),))
+            d=c.fetchall()
+            if len(d)!=0:
+                for row in d:
+                    self.trees.insert("",END,values=row)
+            else:
+                messagebox.showinfo("Error","Data not found.")
+            conn.commit()
+
+        except Exception as e:
+            messagebox.showinfo(e)
+        conn.close()
+
+    def searchall(self):
+        self.list2=("BOOK ID","STUDENT ID","ISSUE DATE","RETURN DATE")
+        self.trees=self.create_tree(self.f1,self.list2)
+        self.trees.place(x=50,y=150)
+        conn=sqlite3.connect('test.db')
+        try:
+            c=conn.execute("select * from book_issued")
+            d=c.fetchall()
+            for row in d:
+                self.trees.insert("",END,values=row)
+
+            conn.commit()
+
+        except Exception as e:
+            messagebox.showinfo(e)
+        conn.close()
+
+#===================START=======================
+def canvases(images,w,h):
+    photo=Image.open(images)
+    photo1=photo.resize((w,h),Image.ANTIALIAS)
+    photo2=ImageTk.PhotoImage(photo1)
+
+#photo2 = ImageTk.PhotoImage(Image.open(images).resize((w, h)),Image.ANTIALIAS)
+    canvas = Canvas(root, width='%d'%w, height='%d'%h)
+    canvas.grid(row = 0, column = 0)
+    canvas.grid_propagate(0)
+    canvas.create_image(0, 0, anchor = NW, image=photo2)
+    canvas.image=photo2
+    return canvas
+root = Tk()
+root.title("LOGIN")
+"""width = 400
+height = 280
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+x = (screen_width/2) - (width/2)
+y = (screen_height/2) - (height/2)"""
+
+#root.state('zoomed')
+#root.resizable(0, 0)
+w = root.winfo_screenwidth()
+h = root.winfo_screenheight()
+canvas=canvases(image3,w,h)
+#photo=PhotoImage(file=images)
+
+
+#==============================METHODS========================================
+def Database():
+    global conn, cursor
+    conn = sqlite3.connect("python1.db")
+    cursor = conn.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS `login` (mem_id INTEGER NOT NULL PRIMARY KEY  AUTOINCREMENT, username TEXT, password TEXT)")
+    cursor.execute("SELECT * FROM `login` WHERE `username` = 'admin' AND `password` = 'admin'")
+    if cursor.fetchone() is None:
+        cursor.execute("INSERT INTO `login` (username, password) VALUES('jasmine', 'jasmine')")
+        conn.commit()
+
+def Login(event=None):
+    Database()
+
+
+    if USERNAME.get() == "" or PASSWORD.get() == "":
+        messagebox.showinfo("Error","Please complete the required field!")
+        lbl_text.config(text="Please complete the required field!", fg="red")
+    else:
+        cursor.execute("SELECT * FROM `login` WHERE `username` = ? AND `password` = ?", (USERNAME.get(), PASSWORD.get()))
+        if cursor.fetchone() is not None:
+            #HomeWindow()
+            #Top.destroy()
+            root.destroy()
+
+            #print("hello logged in ")
+            a=menu()
+            #USERNAME.set("")
+            #PASSWORD.set("")
+            #lbl_text.config(text="")
+        else:
+            messagebox.showinfo("Error","Invalid username or password.")
+            #lbl_text.config(text="Invalid username or password", fg="red")
+            USERNAME.set("")
+            PASSWORD.set("")
+    cursor.close()
+    conn.close()
+
+
+#==============================VARIABLES======================================
+USERNAME = StringVar()
+PASSWORD = StringVar()
+
+#==============================FRAMES=========================================
+'''Top = Frame(root, bd=2,  relief=RIDGE)
+Top.pack(side=TOP, fill=X)
+Form = Frame(root, height=200)
+Form.pack(side=BOTTOM, pady=20)'''
+#==============================LABELS=========================================
+lbl_title = Label(canvas, text = "ADMIN   LOGIN", font=('Papyrus', 30,'bold', ),bg='black', fg='orange')
+lbl_title.place(x=500,y=100)
+lbl_username = Label(canvas, text = "Username:", font=('Papyrus', 15,'bold'),bd=4,bg='black', fg='orange')
+lbl_username.place(x=500,y=230)
+lbl_password = Label(canvas, text = "Password :", font=('Papyrus', 15,'bold'),bd=3, bg='black', fg='orange')
+lbl_password.place(x=500, y=330)
+lbl_text = Label(canvas)
+lbl_text.place(x=450,y=500)
+lbl_text.grid_propagate(0)
+
+
+
+#==============================ENTRY WIDGETS==================================
+username = Entry(canvas, textvariable=USERNAME, font=(14), bg='black', fg='orange',bd=6)
+username.place(x=650, y=230,)
+password = Entry(canvas, textvariable=PASSWORD, show="*", font=(14),bg='black', fg='orange',bd=6)
+password.place(x=650, y=330)
+
+#==============================BUTTON WIDGETS=================================
+btn_login = Button(canvas, text="LOGIN", font=('Papyrus 15 bold'),width=25,command=Login, bg='black', fg='orange')
+btn_login.place(x=500,y=400)
+btn_login.bind('<Return>', Login)
+
 root.mainloop()
