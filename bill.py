@@ -510,6 +510,7 @@ lbl_text.grid_propagate(0)
 
 
 
+
 #==============================ENTRY WIDGETS==================================
 username = Entry(canvas, textvariable=USERNAME, font=(14), bg='black', fg='orange',bd=6)
 username.place(x=650, y=230,)
