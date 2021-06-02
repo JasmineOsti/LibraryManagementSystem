@@ -449,7 +449,7 @@ canvas=canvases(image3,w,h)
 #photo=PhotoImage(file=images)
 
 
-#==============================METHODS========================================
+#==============================METHODS=========================================
 def Database():
     global conn, cursor
     conn = sqlite3.connect("python1.db")
